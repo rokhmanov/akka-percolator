@@ -1,0 +1,41 @@
+==========
+curl -XPUT 'http://localhost:9200/logentries/' -d '
+{
+  "mappings":{
+    "logentry" : {
+        "properties" : {
+            "path" : {"type" : "string", "store" : true },
+            "method" : {"type" : "string", "store" : true },
+            "response time" : {"type" : "string", "store" : true },
+            "device" : {"type" : "string", "store" : true },
+            "user agent" : {"type" : "string", "store" : true },
+            "timestamp" : {"type" : "string", "store" : true },
+            "status" : {"type" : "string", "store" : true }
+        }
+    }
+  }
+}
+'
+
+============
+curl -XPUT 'localhost:9200/logentries/.percolator/078b0d84-1111-4250-9d4c-31bd9d5a83cb' -d '{
+    "query" : {
+        "query_string" : {
+            "query" : "201"
+        }
+    }
+}'
+
+===========
+curl -XGET 'localhost:9200/logentries/logentry/_percolate' -d '{
+"doc" : {
+	"path":"/d",
+	"method":"GET",
+	"response time":"383",
+	"device":"Phone",
+	"user agent":"Safari",
+	"timestamp":"2014-12-14 21:49:53.724",
+	"status":"201"
+        }
+}'
+============
