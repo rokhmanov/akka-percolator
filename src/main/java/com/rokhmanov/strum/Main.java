@@ -2,7 +2,6 @@ package com.rokhmanov.strum;
 
 import java.io.File;
 import java.util.concurrent.ExecutionException;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import javax.json.JsonValue;
@@ -21,7 +20,8 @@ public class Main {
 
 	private static EmbeddedESServer esServer;
 	private static File esDataDirectory;
-	private static String SEARCH_STRING = "20";
+	private static String SEARCH_STRING = "90";
+	private static int NUM_QUERIES = 100;
 	
 	public static void main(String[] args) {
 		try {
@@ -34,19 +34,18 @@ public class Main {
 		Timeout timeout = new Timeout(Duration.create(30, "seconds"));
 		ActorSystem system = ActorSystem.create("strum");
 		ActorRef worker = system.actorOf(Props.create(MainSearchActor.class), "worker");
-		worker.tell(SearchProtocol.Init, null);
 		
-		for (int i = 0; i < 20; i++) {
-			Patterns.ask(worker, new SearchProtocol().new StartSearch(SEARCH_STRING + i), timeout)
-				.onSuccess(new OnSuccessSearch<Object>(SEARCH_STRING + i) , system.dispatcher());					
+		Patterns.ask(worker, SearchProtocol.Init, timeout)
+			.onSuccess(new OnSuccessSearch<Object>() , system.dispatcher());					
+		
+		for (int i = 0; i < NUM_QUERIES; i++) {
+			worker.tell(new SearchProtocol().new StartSearch(SEARCH_STRING + i), ActorRef.noSender());
 		}
 		
-		//shutdown();
 	}
 	
 	private static void startup() throws InterruptedException, ExecutionException {
 		esDataDirectory = new File(System.getProperty("user.dir"), "elasticsearch-data");
-		// TODO: remove folder deletion 
 		FileUtils.deleteRecursively(esDataDirectory);
 		esServer = new EmbeddedESServer(esDataDirectory);
 	}
@@ -59,23 +58,9 @@ public class Main {
 }
 
 class OnSuccessSearch<T> extends OnSuccess<T> {
-	String searchCriteria;
-	public OnSuccessSearch(String searchCriteria){
-		this.searchCriteria = searchCriteria;
-	}
 	@Override
 	public void onSuccess(Object obj) {
-		SearchProtocol.SearchFeed feed = (SearchProtocol.SearchFeed)obj;
-		Stream.generate(new Supplier<JsonValue>(){
-			@Override
-			public JsonValue get() {
-				try {
-					return feed.getElements().take();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				return JsonValue.NULL;
-			}
-		}).forEach(s -> System.out.println(searchCriteria + "===>" + s));
+		Stream<Tuple<String, JsonValue>> feed = (Stream<Tuple<String, JsonValue>>)obj;
+		feed.forEach(s -> System.out.println(s.x + "===>" + s.y));		
 	}
 }

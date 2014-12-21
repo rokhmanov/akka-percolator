@@ -2,7 +2,6 @@ package com.rokhmanov.strum;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.BlockingQueue;
 
 import javax.json.JsonValue;
 
@@ -53,18 +52,6 @@ public class SearchProtocol {
 			return id.toString();
 		}
 	}
-	
-	
-	class SearchFeed {
-		private BlockingQueue<JsonValue> out; 
-		public SearchFeed(BlockingQueue<JsonValue> startSearching) {
-			this.out = startSearching;
-		}
-		public BlockingQueue<JsonValue> getElements(){
-			return out;
-		}
-	}
-	
 	
 	class SearchMatch {
 		private LogEntry logEntry;

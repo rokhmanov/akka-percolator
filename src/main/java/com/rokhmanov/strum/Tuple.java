@@ -1,4 +1,4 @@
-package com.rokhmanov.strum.test;
+package com.rokhmanov.strum;
 
 public class Tuple<X, Y> {
 	public final X x;
