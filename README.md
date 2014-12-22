@@ -16,5 +16,6 @@ You should see output stream of a matched log entries like below:
 To stop, simple kill the execution, the Elasticsearch indexes will re-populate during the next start.
 
 ### Resources:
-*[1] http://rokhmanov.blogspot.com/2014/12/realtime-data-percolation-with.html
-*[2] http://www.dreweaster.com/blog/2013/07/08/reactive-real-time-log-search-with-play-akka-angularjs-and-elasticsearch/
+[1] http://rokhmanov.blogspot.com/2014/12/realtime-data-percolation-with.html
+
+[2] http://www.dreweaster.com/blog/2013/07/08/reactive-real-time-log-search-with-play-akka-angularjs-and-elasticsearch/
